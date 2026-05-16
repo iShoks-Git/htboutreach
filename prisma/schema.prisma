@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+
+  // Agent config
+  team        String  @default("Hack The Box")
+  language    String  @default("English")
+  goal        String  @default("book a demo")
+  bookingLink String?
+  customVp    String?
+
+  accounts  Account[]
+  sessions  Session[]
+  prospects Prospect[]
+}
+
+model Prospect {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  stage String @default("Not Contacted")
+
+  // Basic profile
+  name     String
+  headline String?
+  location String?
+  company  String?
+  liurl    String?
+
+  // Posts and experience
+  posts   String?
+  current String?
+  past    String?
+  vol     String?
+
+  // Skills and background
+  skills String?
+  langs  String?
+  edu    String?
+  certs  String?
+  acc    String?
+
+  // Social proof + extras
+  recs  String?
+  extra String?
+
+  // Research
+  annualReport    String?
+  researchCompany String?
+  salesNav        String?
+
+  // Generated messages
+  icebreaker String?
+  followup   String?
+
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
