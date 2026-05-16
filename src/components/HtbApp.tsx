@@ -1,5 +1,5 @@
 "use client";
-
+import { EnquiryForm } from "./EnquiryForm";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 
@@ -80,6 +80,7 @@ export function HtbApp() {
   const [filter, setFilter] = useState<string>("All");
   const [selId, setSelId] = useState<string | null>(null);
   const [toastMsg, setToastMsg] = useState<string>("");
+  const [showEnquiry, setShowEnquiry] = useState(false);
 
   useEffect(() => {
     void Promise.all([
@@ -127,7 +128,8 @@ export function HtbApp() {
           </div>
         </div>
         <div className="row">
-          <button className="btn-p" onClick={() => showPage("new")}>+ Prospect</button>
+         <button className="btn-enquiry" onClick={() => setShowEnquiry(true)}>Enquire</button>
+<button className="btn-p" onClick={() => showPage("new")}>+ Prospect</button>
           <button
             className={config?.name ? "btn-cfg-ok" : "btn-s"}
             onClick={() => showPage("config")}
@@ -195,6 +197,7 @@ export function HtbApp() {
       )}
 
       {toastMsg && <div className="toast">{toastMsg}</div>}
+      {showEnquiry && <EnquiryForm onClose={() => setShowEnquiry(false)} />}
     </>
   );
 }
